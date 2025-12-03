@@ -1,41 +1,5 @@
 # Challenges
 
-## PHP - Filters
-
-[https://www.root-me.org/fr/Challenges/Web-Serveur/PHP-Filters](https://www.root-me.org/fr/Challenges/Web-Serveur/PHP-Filters)
-
-### Étapes
-
-1. Sur la page d'accueil, dans l'url, ajouter un filtre: `?inc=php://filter/convert.base64-encode/resource=index.php`
-2. Changer le nom du fichier par celui qu'on veut récupérer (index.php, ch12.php, config.php...)
-
-<img src="images/php-filters.png" alt="php-filters" width="800"/>
-
-Contenu du fichier :
-```php
-<?php
-$username="admin";
-$password="DAPt9D2mky0APAF";
-```
-
-Ressources : [https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/File%20Inclusion/Wrappers.md#wrapper-phpfilter](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/File%20Inclusion/Wrappers.md#wrapper-phpfilter)
-
-### Explication
-
-PHP Filters permet de manipuler le contenu des fichiers lus via des flux (streams) en appliquant des filtres.
-Ici, le filtre `convert.base64-encode` encode le contenu du fichier en base64, permettant de lire des fichiers sensibles.
-
-### Recommandations
-
-- Désactiver les wrappers PHP non nécessaires
-- Valider et assainir les entrées utilisateur utilisées dans les chemins de fichiers
-
-[https://www.php.net/manual/en/filters.convert.php](https://www.php.net/manual/en/filters.convert.php)
-
-<br />
-<hr style="height:0; border:1px white solid;" />
-<br />
-
 ## File path traversal, validation of file extension with null byte bypass
 
 [https://portswigger.net/web-security/file-path-traversal/lab-validate-file-extension-null-byte-bypass](https://portswigger.net/web-security/file-path-traversal/lab-validate-file-extension-null-byte-bypass)
@@ -61,6 +25,43 @@ Le site vérifie uniquement l'extension, et ne contrôle pas qu'on sort du dossi
 
 [https://www.cve.org/CVERecord?id=CVE-2002-1031](https://www.cve.org/CVERecord?id=CVE-2002-1031)
 [https://www.cve.org/CVERecord?id=CVE-2000-0149](https://www.cve.org/CVERecord?id=CVE-2000-0149)
+
+<br />
+<hr style="height:0; border:1px white solid;" />
+<br />
+
+## PHP - Filters
+
+[https://www.root-me.org/fr/Challenges/Web-Serveur/PHP-Filters](https://www.root-me.org/fr/Challenges/Web-Serveur/PHP-Filters)
+
+### Étapes
+
+1. Sur la page d'accueil, dans l'url, ajouter un filtre: `?inc=php://filter/convert.base64-encode/resource=index.php`
+2. Changer le nom du fichier par celui qu'on veut récupérer (index.php, ch12.php, config.php...)
+
+<img src="images/php-filters.png" alt="php-filters" width="800"/>
+
+Contenu du fichier :
+
+```php
+<?php
+$username="admin";
+$password="DAPt9D2mky0APAF";
+```
+
+Ressources : [https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/File%20Inclusion/Wrappers.md#wrapper-phpfilter](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/File%20Inclusion/Wrappers.md#wrapper-phpfilter)
+
+### Explication
+
+PHP Filters permet de manipuler le contenu des fichiers lus via des flux (streams) en appliquant des filtres.
+Ici, le filtre `convert.base64-encode` encode le contenu du fichier en base64, permettant de lire des fichiers sensibles.
+
+### Recommandations
+
+- Désactiver les wrappers PHP non nécessaires
+- Valider et assainir les entrées utilisateur utilisées dans les chemins de fichiers
+
+[https://www.php.net/manual/en/filters.convert.php](https://www.php.net/manual/en/filters.convert.php)
 
 <br />
 <hr style="height:0; border:1px white solid;" />
@@ -201,6 +202,10 @@ Si l'en-tête est absent, la validation échoue, permettant à un attaquant de c
 
 [https://portswigger.net/web-security/csrf/bypassing-referer-based-defenses#validation-of-referer-depends-on-header-being-present] (https://portswigger.net/web-security/csrf/bypassing-referer-based-defenses#validation-of-referer-depends-on-header-being-present)
 
+<br />
+<hr style="height:0; border:1px white solid;" />
+<br />
+
 ## JWT - Jeton révoqué
 
 [https://www.root-me.org/fr/Challenges/Web-Serveur/JWT-Jeton-revoque](https://www.root-me.org/fr/Challenges/Web-Serveur/JWT-Jeton-revoque)
@@ -219,3 +224,53 @@ La vérification de signature tolère un JWT avec padding (=). La liste de révo
 ### Recommandations
 
 Strip les caractères de padding avant de vérifier les JWT [https://github.com/auth0/node-jws/issues/98](https://github.com/auth0/node-jws/issues/98)
+
+<br />
+<hr style="height:0; border:1px white solid;" />
+<br />
+
+## SQL injection - Error
+
+[https://www.root-me.org/fr/Challenges/Web-Serveur/SQL-injection-Error](https://www.root-me.org/fr/Challenges/Web-Serveur/SQL-injection-Error)
+
+<!-- TODO -->
+
+<br />
+<hr style="height:0; border:1px white solid;" />
+<br />
+
+## Injection de commande - Contournement de filtre
+
+[https://www.root-me.org/fr/Challenges/Web-Serveur/Injection-de-commande-Contournement-de-filtre](https://www.root-me.org/fr/Challenges/Web-Serveur/Injection-de-commande-Contournement-de-filtre)
+
+<!-- TODO -->
+
+<br />
+<hr style="height:0; border:1px white solid;" />
+<br />
+
+## XSS - Stockée 2
+
+[https://www.root-me.org/fr/Challenges/Web-Client/XSS-Stockee-2](https://www.root-me.org/fr/Challenges/Web-Client/XSS-Stockee-2)
+
+<!-- TODO -->
+
+<br />
+<hr style="height:0; border:1px white solid;" />
+<br />
+
+## Server-side template injection in an unknown language with a documented exploit
+
+[https://portswigger.net/web-security/server-side-template-injection/exploiting/lab-server-side-template-injection-in-an-unknown-language-with-a-documented-exploit](https://portswigger.net/web-security/server-side-template-injection/exploiting/lab-server-side-template-injection-in-an-unknown-language-with-a-documented-exploit)
+
+<!-- TODO -->
+
+<br />
+<hr style="height:0; border:1px white solid;" />
+<br />
+
+## API - Mass Assignment
+
+[https://www.root-me.org/fr/Challenges/Web-Serveur/API-Mass-Assignment](https://www.root-me.org/fr/Challenges/Web-Serveur/API-Mass-Assignment)
+
+<!-- TODO -->
