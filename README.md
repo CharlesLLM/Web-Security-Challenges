@@ -22,16 +22,15 @@ Ressources : [https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Fi
 
 ### Explication
 
-Le site vérifie uniquement l'extension, et ne contrôle pas qu'on sort du dossier du site.
+PHP Filters permet de manipuler le contenu des fichiers lus via des flux (streams) en appliquant des filtres.
+Ici, le filtre `convert.base64-encode` encode le contenu du fichier en base64, permettant de lire des fichiers sensibles.
 
 ### Recommandations
 
-- Empêcher de pouvoir charger des fichiers hors du dossier du site
-- Contrôler les caractères nul (%00, \x00)
-- Vérifier le mime-type du fichier chargé, pas uniquement l'extension
+- Désactiver les wrappers PHP non nécessaires
+- Valider et assainir les entrées utilisateur utilisées dans les chemins de fichiers
 
-[https://www.cve.org/CVERecord?id=CVE-2002-1031](https://www.cve.org/CVERecord?id=CVE-2002-1031)
-[https://www.cve.org/CVERecord?id=CVE-2000-0149](https://www.cve.org/CVERecord?id=CVE-2000-0149)
+[https://www.php.net/manual/en/filters.convert.php](https://www.php.net/manual/en/filters.convert.php)
 
 <br />
 <hr style="height:0; border:1px white solid;" />
