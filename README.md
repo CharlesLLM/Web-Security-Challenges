@@ -342,4 +342,35 @@ Le champ de saisie n'est pas correctement assaini, permettant l'injection de cod
 
 [https://www.root-me.org/fr/Challenges/Web-Serveur/API-Mass-Assignment](https://www.root-me.org/fr/Challenges/Web-Serveur/API-Mass-Assignment)
 
-<!-- TODO -->
+### Étapes
+
+1. Register puis login, on va get le user
+2. On récupère des données JSON : `{"note":"","guest":"admin","userid":7,"username":"attacker"}`
+
+On peut update les notes. Test suivant : Update la payload en mettant "status": "admin". Ça ne marche pas.
+
+Grâce à https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Mass%20Assignment#references, on peut se dire que le dev a laissé les cruds par défaut
+
+3. Donc on fait une request PUT sur /user et ça met à jour le user :
+
+`{"note":"admin","status":"admin","userid":7,"username":"attacker"}`
+
+Résultat :
+```json
+{
+  "message": "Hello admin, here is the flag : RM{4lw4yS_ch3ck_0pt10ns_m3th0d}."
+}
+```
+
+### Explication
+
+Le serveur accepte des propriétés non prévues dans les objets JSON, permettant à un attaquant de modifier des données sensibles.
+
+### Recommandations
+
+- Restreindre les propriétés acceptées dans les objets JSON
+- Utiliser des listes blanches pour les champs modifiables
+
+### Références
+
+[https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Mass%20Assignment#references](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Mass%20Assignment#references)
