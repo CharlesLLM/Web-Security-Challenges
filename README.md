@@ -249,7 +249,40 @@ Strip les caractères de padding avant de vérifier les JWT [https://github.com/
 
 [https://www.root-me.org/fr/Challenges/Web-Serveur/SQL-injection-Error](https://www.root-me.org/fr/Challenges/Web-Serveur/SQL-injection-Error)
 
-<!-- TODO -->
+### Étapes
+
+1. Aller sur l’onglet content. L’URL contient un paramètre `order`.
+2. Passer un paramètre invalide (`'` | `"` | `,` | `;`). Le serveur renvoie une erreur sur la page, ce qui permet d’identifier le type de moteur de base de données.
+  <br /><img src="images/sql-injection-2.png" alt="sql-injection" width="800"/>
+3. Avec Burp, faire une requête avec un paramètre fonctionnel (ex : `order=ASC`)
+4. Exporter la requête (clic droit -> "Save item") <br /><img src="images/sql-injection-4.png" alt="sql-injection" width="800"/>
+5. Dans un terminal : `sqlmap -r rootme-sql-inject-error-based.txt -p order --level=5 --risk=3 --all`
+
+```txt
+-r : utilise l’export Burp comme source
+-p : précise le paramètre vulnérable
+--all : retourne tout le contenu de la base de données
+--level et --risk : augmentent la profondeur de la recherche
+```
+
+SQLMap affiche un utilisateur et son mot de passe.
+<br /><img src="images/sql-injection-6.png" alt="sql-injection" width="800"/>
+
+### Explication
+
+Le paramètre `order` est utilisé directement dans une requête SQL sans être filtré. En injectant des caractères spéciaux, on peut provoquer des erreurs qui révèlent des informations sur la base de données.
+
+### Recommandations
+
+- Utiliser des requêtes préparées (prepared statements) pour éviter les injections
+- Valider et assainir les entrées utilisateur
+- Limiter les privilèges de la base de données
+- Mettre en place une surveillance des erreurs pour détecter les tentatives d'injection
+
+### Références
+
+[https://owasp.org/www-community/attacks/SQL_Injection](https://owasp.org/www-community/attacks/SQL_Injection)
+[https://portswigger.net/web-security/sql-injection](https://portswigger.net/web-security/sql-injection)
 
 <br />
 <hr style="height: 0; border: 1px white solid;" />
